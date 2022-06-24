@@ -1,0 +1,18 @@
+const { createPool } = require("mysql");
+const pool = createPool({
+    port: process.env.DB_PORT,
+    host: process.env.DB_HOST,
+    user: process.env.DB_USER,
+    password: process.env.DB_PASSWORD,
+    database: process.env.MYSQL_DB,
+    connectionLimit: 10,
+    typeCast: function castField( field, useDefaultTypeCasting ) {
+		if ( ( field.type === "BIT" ) && ( field.length === 1 ) ) {
+			var bytes = field.buffer();
+			return( bytes[ 0 ] === 1 );
+		}
+		return( useDefaultTypeCasting() );
+	}
+})
+
+module.exports = pool;

@@ -1,0 +1,26 @@
+service: NodeProject
+
+frameworkVersion: '2'
+
+provider:
+  name: aws
+  runtime: nodejs12.x
+  memorySize: 2048
+  stage: dev
+  timeout: 20
+  lambdaHashingVersion: 20201221
+
+functions:
+  hello:
+    handler: handler.hello
+    events:
+      - http: ANY /{proxy+}
+      - http: ANY /
+
+#    Define function environment variables here
+    environment:
+      DB_PORT = 3306
+      DB_HOST = appmasterdb.cqdqym6krkgl.us-east-1.rds.amazonaws.com
+      DB_USER = applicationuser
+      DB_PASSWORD = appadminuser
+      MYSQL_DB = appmasterdb
