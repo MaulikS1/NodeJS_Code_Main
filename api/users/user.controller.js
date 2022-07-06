@@ -1,7 +1,7 @@
 const { response } = require("express");
 const { create, getUsers, getUserByUserId, updateUser, deleteUser, getUserByUserEmail,getUserdetailsByUserEmail } =  require("./user.service");
 const { genSaltSync, hashSync, compareSync } = require("bcrypt");
-const { sign } = require("jsonwebtoken"); 
+const { sign } = require("jsonwebtoken");
 
 module.exports = {
     createUser: (req, res) => {
@@ -15,7 +15,7 @@ module.exports = {
         //console.log("Insert Password ==>",body.password);
         create(body, (err, results) => {
             //console.log("Error Msg====>",err.code);
-            
+
             if(err)
             {
                 if (err.code == "ER_DUP_ENTRY") {
@@ -24,7 +24,7 @@ module.exports = {
                         success: 1062,
                         message: "Duplicate Entry for Email address field is not allowed."
                     });
-                } 
+                }
 
                 else if (err) {
                     console.log(err);
@@ -60,12 +60,12 @@ module.exports = {
                 success: 1,
                 data: results
             });
-        }); 
+        });
     },
 
     getUserdetailsByUserEmail: (req, res) => {
         const email = req.params.email;
-        
+
         getUserdetailsByUserEmail(email, (err, results) => {
             if(err){
                 console.log(err);
@@ -83,7 +83,7 @@ module.exports = {
                 success: 1,
                 data: results
             });
-        }); 
+        });
     },
 
     getUsers: (req, res) => {
@@ -167,12 +167,14 @@ module.exports = {
     },
 
     login: (req, res) => {
+        try{
         const body = req.body;
         getUserByUserEmail(body.email, (err, results) => {
             console.log("Error ==>",err);
             console.log("Is active ==>>", results.isActive);
             if(err){
                 console.log(err);
+                return;
             }
             if(!results){
                 return res.json({
@@ -188,12 +190,26 @@ module.exports = {
                 const jsontoken = sign({ result: results }, "abcdQ123", {
                     expiresIn: "60m"
                 });
-                return res.json({
-                    success: 1,
-                    message: "Login Successfully.",
-                    token: jsontoken
-                });
-            }
+
+                //console.log(cookie);
+                // return res.json({
+                //     success: 1,
+                //     message: "Login Successfully.",
+                //     token: jsontoken
+                // });
+
+                // return res.cookie('token', jsontoken, {
+                //     // expires: new Date(Date.now() + expiration), // time until expiration
+                //     secure: false, // set to true if you're using https
+                //     httpOnly: true,
+                //   });
+
+                return res.cookie("access_token", jsontoken, {
+                        httpOnly: true
+                        })
+                        .status(200)
+                        .json({ message: "Login Successfully.", success: 1 });
+                    }
             else if(results!=null && !results.isActive){
                 console.log("Inactive user");
                 return res.json({
@@ -208,6 +224,10 @@ module.exports = {
                 });
             }
         });
+    }
+    catch{
+        console.log("Something went wrong !");
+    }
     }
 
 };

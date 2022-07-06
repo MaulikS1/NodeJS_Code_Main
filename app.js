@@ -1,21 +1,23 @@
 require("dotenv").config(); 
 const express = require("express");
+const cookieParser = require("cookie-parser");
+
 
 
 const app = express();
 const userRouter = require("./api/users/user.router");
-var cors = require('cors')
+var cors = require('cors');
 
-
-app.use(cors()) 
+app.use(cors({credentials: true, origin: 'http://localhost:4200'}));
 
 app.use(function(req, res, next) {
-    res.header("Access-Control-Allow-Origin", "*"); // update to match the domain you will make the request from
-    res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+    res.setHeader("Access-Control-Allow-Origin", "*");
+    res.setHeader('Access-Control-Allow-Origin', 'http://localhost:4200');
     next();
   });
 
 app.use(express.json());
+app.use(cookieParser());
 app.use("/api/users", userRouter);
 
 app.listen(process.env.APP_PORT, () => {

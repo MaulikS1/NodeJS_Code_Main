@@ -37,20 +37,20 @@ module.exports = {
 
     getUserByUserId: (id, callBack) => {
         pool.query(
-            `select userid, name, email from admin_users where email= ?`,
+            `select userid, name, email, createdDate, endDate, isActive from admin_users where email= ?`,
             [id],
             (error, results, fields) => {
                 if(error){
                     return callBack(error);
                 }
-                return callBack(null, results[0]);
+                return callBack(null, results);
             }
         );
     },
 
     getUserdetailsByUserEmail: (email, callBack) => {
         pool.query(
-            `select userid, name, email from admin_users where email= ?`,
+            `select userid, name, email, createdDate, endDate, isActive from admin_users where email= ?`,
             [email],
             (error, results, fields) => {
                 console.log(error);

@@ -3,10 +3,11 @@ const { verify } = require("jsonwebtoken");
 
 module.exports = {
     checkToken: (req, res, next) => {
-        let token = req.get("authorization");
+        // let token = req.get("authorization");
+        const token = req.cookies.access_token;
         console.log("Token ===>>", token);
         if(token){
-            token = token.slice(7);
+            //token = token.slice(7);
             verify(token, "abcdQ123", (err, decoded) => {
                 if(err){
                     res.json({
